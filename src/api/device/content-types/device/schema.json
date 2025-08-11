@@ -1,0 +1,36 @@
+{
+  "kind": "collectionType",
+  "collectionName": "devices",
+  "info": {
+    "singularName": "device",
+    "pluralName": "devices",
+    "displayName": "device"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "token": {
+      "type": "string",
+      "required": true,
+      "unique": true
+    },
+    "platform": {
+      "type": "enumeration",
+      "required": true,
+      "enum": [
+        "ios",
+        "android"
+      ]
+    },
+    "clerkUserId": {
+      "type": "string",
+      "required": true,
+      "unique": true
+    },
+    "lastSeen": {
+      "type": "datetime"
+    }
+  }
+}

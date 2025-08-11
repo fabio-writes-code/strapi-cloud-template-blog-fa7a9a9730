@@ -58,6 +58,12 @@
       "type": "boolean",
       "required": true,
       "default": false
+    },
+    "notification": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::notification.notification",
+      "mappedBy": "article"
     }
   }
 }
