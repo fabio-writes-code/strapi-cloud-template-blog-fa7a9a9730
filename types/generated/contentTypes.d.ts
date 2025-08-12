@@ -516,7 +516,7 @@ export interface ApiCategoryCategory extends Struct.CollectionTypeSchema {
 export interface ApiDeviceDevice extends Struct.CollectionTypeSchema {
   collectionName: 'devices';
   info: {
-    displayName: 'device';
+    displayName: 'Device';
     pluralName: 'devices';
     singularName: 'device';
   };
@@ -524,12 +524,14 @@ export interface ApiDeviceDevice extends Struct.CollectionTypeSchema {
     draftAndPublish: false;
   };
   attributes: {
+    appVersion: Schema.Attribute.Decimal;
     clerkUserId: Schema.Attribute.String &
       Schema.Attribute.Required &
       Schema.Attribute.Unique;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    enabled: Schema.Attribute.Boolean & Schema.Attribute.Required;
     lastSeen: Schema.Attribute.DateTime;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
@@ -585,7 +587,7 @@ export interface ApiNotificationNotification
   extends Struct.CollectionTypeSchema {
   collectionName: 'notifications';
   info: {
-    displayName: 'notification';
+    displayName: 'Notification';
     pluralName: 'notifications';
     singularName: 'notification';
   };
@@ -599,6 +601,7 @@ export interface ApiNotificationNotification
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
     deeplink: Schema.Attribute.String;
+    errors: Schema.Attribute.JSON;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
@@ -606,6 +609,8 @@ export interface ApiNotificationNotification
     > &
       Schema.Attribute.Private;
     publishedAt: Schema.Attribute.DateTime;
+    sendCount: Schema.Attribute.Integer;
+    sentAt: Schema.Attribute.DateTime;
     title: Schema.Attribute.String & Schema.Attribute.Required;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &

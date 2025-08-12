@@ -4,7 +4,7 @@
   "info": {
     "singularName": "notification",
     "pluralName": "notifications",
-    "displayName": "notification"
+    "displayName": "Notification"
   },
   "options": {
     "draftAndPublish": true
@@ -28,6 +28,15 @@
       "relation": "oneToOne",
       "target": "api::article.article",
       "inversedBy": "notification"
+    },
+    "sentAt": {
+      "type": "datetime"
+    },
+    "sendCount": {
+      "type": "integer"
+    },
+    "errors": {
+      "type": "json"
     }
   }
 }

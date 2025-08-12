@@ -1,4 +1,7 @@
 import type { Core } from '@strapi/strapi';
+import { sendExpo } from './services/expo-notifications';
+
+const UIDS = ['api::notification.notification', 'api::article.article']
 
 export default {
   /**
@@ -7,27 +10,43 @@ export default {
    *
    * This gives you an opportunity to extend code.
    */
+
   register({ strapi }: { strapi: Core.Strapi }) {
     strapi.documents.use(async (ctx, next) => {
-      if (ctx.uid! == 'api::notification.notification') return next()
 
-      let wasPublished = false;
-      console.log(ctx, typeof ctx.params, !!ctx.params)
+      if (!UIDS.includes(ctx.uid)) return next()
+      const result = await next()
 
-      if (ctx.action! == 'create') {
-        console.log('create')
+      if (ctx.action == 'publish' && result) {
+        const { title, body, deeplink } = await strapi
+          .documents('api::notification.notification')
+          .findOne({ documentId: ctx.params.documentId })
+
+        const devices = await strapi
+          .documents('api::device.device')
+          .findMany({ filters: { enabled: true }, fields: ['token'] })
+
+        const tokens = devices.map(d => d.token).filter(Boolean)
+
+        const tickets = await sendExpo({
+          tokens,
+          title,
+          body,
+          data: { deeplink }
+        })
+
+        await strapi.documents('api::notification.notification')
+          .update({
+            documentId: ctx.params.documentId,
+            data: {
+              sentAt: new Date().toISOString(),
+              sendCount: tokens.length,
+              errors: tickets.filter(t => t.status != 'ok')
+            }
+          })
       }
 
-
-      // if (ctx.action! == 'create' && ctx.params?.documentId) {
-      //   const prev = await strapi
-      //     .documents('api::notification.notification')
-      //     .findOne({ documentId: ctx.params.lookup, status: 'published' })
-      //   wasPublished = !!prev?.publishedAt;
-      // }
-
-      // const result = await next()
-      return next()
+      return result
     })
   },
 
