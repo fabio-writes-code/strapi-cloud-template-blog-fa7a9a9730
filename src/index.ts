@@ -1,7 +1,7 @@
 import type { Core } from '@strapi/strapi';
 import { sendExpo } from './services/expo-notifications';
 
-const UIDS = ['api::notification.notification', 'api::article.article']
+const UIDS = ['api::notification.notification']
 
 export default {
   /**
