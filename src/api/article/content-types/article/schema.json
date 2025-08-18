@@ -45,6 +45,11 @@
       "target": "api::category.category",
       "inversedBy": "articles"
     },
+    "isPremium": {
+      "type": "boolean",
+      "required": true,
+      "default": false
+    },
     "blocks": {
       "type": "dynamiczone",
       "components": [
@@ -53,11 +58,6 @@
         "shared.rich-text",
         "shared.slider"
       ]
-    },
-    "isPremium": {
-      "type": "boolean",
-      "required": true,
-      "default": false
     },
     "notification": {
       "type": "relation",

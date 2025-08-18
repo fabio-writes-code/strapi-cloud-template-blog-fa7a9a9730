@@ -3,6 +3,7 @@ import { unstable_useContentManagerContext, useFetchClient } from '@strapi/strap
 import { Button, Typography } from '@strapi/design-system';
 
 import type { StrapiApp } from '@strapi/strapi/admin';
+import { useEffect, useState } from 'react';
 
 export default {
   config: {
@@ -10,7 +11,6 @@ export default {
     ],
   },
   bootstrap(app: StrapiApp) {
-    console.log(app);
     app.getPlugin('content-manager').injectComponent('editView', 'right-links', { name: 'modal-nofity', Component: AutoNotifyPanel })
   },
 };
@@ -18,7 +18,18 @@ export default {
 function AutoNotifyPanel() {
   const { slug, id } = unstable_useContentManagerContext(); // v5
   const { post, get } = useFetchClient()
+  const [isPublished, setIsPublised] = useState(false)
   if (slug !== 'api::article.article') return null
+
+  useEffect(() => {
+    const getArticleData = async () => {
+      const { data } = await get(`/content-manager/collection-types/api::article.article/${id}`)
+      setIsPublised(data.data.status === "published")
+    }
+
+    getArticleData()
+  }, [])
+
 
   const onConfirm = async () => {
     const { data } = await post('/api/push', { articleId: id })
@@ -28,11 +39,16 @@ function AutoNotifyPanel() {
   };
 
   return (
-    <Button onClick={onConfirm} fullWidth={true}>
-      <Typography fontWeight="bold" id="auto-notify-title">
-        Create Notification
-      </Typography>
-    </Button>
+    <>
+      {isPublished
+        ? (<Button onClick={onConfirm} fullWidth={true}>
+          <Typography id="auto-notify-title">
+            Create Notification
+          </Typography>
+        </Button>)
+        : null
+      }
+    </>
   );
 }
 
