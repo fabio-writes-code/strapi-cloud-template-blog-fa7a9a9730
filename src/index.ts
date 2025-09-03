@@ -1,5 +1,6 @@
 import type { Core } from '@strapi/strapi';
 import { sendExpo } from './services/expo-notifications';
+import { Expo } from "expo-server-sdk"
 
 const UIDS = ['api::notification.notification']
 
@@ -27,6 +28,12 @@ export default {
           .findMany({ filters: { enabled: true }, fields: ['token'] })
 
         const tokens = devices.map(d => d.token).filter(Boolean)
+
+        let expo = new Expo({
+          useFcmV1: true
+        })
+
+        // for()
 
         const tickets = await sendExpo({
           tokens,
