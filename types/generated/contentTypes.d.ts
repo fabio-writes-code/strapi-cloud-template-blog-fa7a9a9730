@@ -618,6 +618,49 @@ export interface ApiNotificationNotification
   };
 }
 
+export interface ApiRequestRequest extends Struct.CollectionTypeSchema {
+  collectionName: 'requests';
+  info: {
+    displayName: 'Request';
+    pluralName: 'requests';
+    singularName: 'request';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    author: Schema.Attribute.Relation<'oneToOne', 'api::author.author'>;
+    category: Schema.Attribute.String;
+    clientName: Schema.Attribute.String;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    dateRequested: Schema.Attribute.String;
+    dateStarted: Schema.Attribute.String;
+    deliverable: Schema.Attribute.String;
+    description: Schema.Attribute.Text & Schema.Attribute.Required;
+    estimatedCompletion: Schema.Attribute.String;
+    estimatedCost: Schema.Attribute.Decimal;
+    estimatedTimeframe: Schema.Attribute.String;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::request.request'
+    > &
+      Schema.Attribute.Private;
+    priority: Schema.Attribute.Enumeration<['high', 'medium', 'low']>;
+    progress: Schema.Attribute.Integer;
+    publishedAt: Schema.Attribute.DateTime;
+    requestStatus: Schema.Attribute.Enumeration<
+      ['Pending', 'In Progress', 'Completed']
+    >;
+    title: Schema.Attribute.String & Schema.Attribute.Required;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface PluginContentReleasesRelease
   extends Struct.CollectionTypeSchema {
   collectionName: 'strapi_releases';
@@ -1134,6 +1177,7 @@ declare module '@strapi/strapi' {
       'api::device.device': ApiDeviceDevice;
       'api::global.global': ApiGlobalGlobal;
       'api::notification.notification': ApiNotificationNotification;
+      'api::request.request': ApiRequestRequest;
       'plugin::content-releases.release': PluginContentReleasesRelease;
       'plugin::content-releases.release-action': PluginContentReleasesReleaseAction;
       'plugin::i18n.locale': PluginI18NLocale;

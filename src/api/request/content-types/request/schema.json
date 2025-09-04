@@ -1,0 +1,71 @@
+{
+  "kind": "collectionType",
+  "collectionName": "requests",
+  "info": {
+    "singularName": "request",
+    "pluralName": "requests",
+    "displayName": "Request"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "title": {
+      "type": "string",
+      "required": true
+    },
+    "description": {
+      "type": "text",
+      "required": true
+    },
+    "category": {
+      "type": "string"
+    },
+    "priority": {
+      "type": "enumeration",
+      "enum": [
+        "high",
+        "medium",
+        "low"
+      ]
+    },
+    "estimatedCost": {
+      "type": "decimal"
+    },
+    "estimatedTimeframe": {
+      "type": "string"
+    },
+    "requestStatus": {
+      "type": "enumeration",
+      "enum": [
+        "Pending",
+        "In Progress",
+        "Completed"
+      ]
+    },
+    "dateRequested": {
+      "type": "string"
+    },
+    "dateStarted": {
+      "type": "string"
+    },
+    "estimatedCompletion": {
+      "type": "string"
+    },
+    "clientName": {
+      "type": "string"
+    },
+    "author": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::author.author"
+    },
+    "deliverable": {
+      "type": "string"
+    },
+    "progress": {
+      "type": "integer"
+    }
+  }
+}
