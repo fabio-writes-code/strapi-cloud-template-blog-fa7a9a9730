@@ -1,5 +1,38 @@
 import type { Schema, Struct } from '@strapi/strapi';
 
+export interface RequestDeliverableDeliverables extends Struct.ComponentSchema {
+  collectionName: 'components_request_deliverable_deliverables';
+  info: {
+    displayName: 'deliverables';
+  };
+  attributes: {
+    deliverable: Schema.Attribute.String;
+    deliverableStatus: Schema.Attribute.Enumeration<
+      ['Planned', 'In Progress', 'Done']
+    >;
+    dueDate: Schema.Attribute.Date;
+    file: Schema.Attribute.Media<
+      'files' | 'audios' | 'images' | 'videos',
+      true
+    >;
+  };
+}
+
+export interface SharedAddress extends Struct.ComponentSchema {
+  collectionName: 'components_shared_addresses';
+  info: {
+    displayName: 'address';
+  };
+  attributes: {
+    city: Schema.Attribute.String;
+    country: Schema.Attribute.String;
+    line1: Schema.Attribute.String;
+    line2: Schema.Attribute.String;
+    postalCode: Schema.Attribute.String;
+    province: Schema.Attribute.String;
+  };
+}
+
 export interface SharedMedia extends Struct.ComponentSchema {
   collectionName: 'components_shared_media';
   info: {
@@ -65,6 +98,8 @@ export interface SharedSlider extends Struct.ComponentSchema {
 declare module '@strapi/strapi' {
   export module Public {
     export interface ComponentSchemas {
+      'request-deliverable.deliverables': RequestDeliverableDeliverables;
+      'shared.address': SharedAddress;
       'shared.media': SharedMedia;
       'shared.quote': SharedQuote;
       'shared.rich-text': SharedRichText;

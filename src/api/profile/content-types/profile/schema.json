@@ -1,0 +1,81 @@
+{
+  "kind": "collectionType",
+  "collectionName": "profiles",
+  "info": {
+    "singularName": "profile",
+    "pluralName": "profiles",
+    "displayName": "Profile"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "clerkUserId": {
+      "type": "string",
+      "private": true,
+      "required": true,
+      "unique": true
+    },
+    "email": {
+      "type": "email",
+      "required": true,
+      "unique": true
+    },
+    "firstName": {
+      "type": "string",
+      "required": true
+    },
+    "lastName": {
+      "type": "string",
+      "required": true
+    },
+    "phone": {
+      "type": "string"
+    },
+    "role": {
+      "type": "enumeration",
+      "required": true,
+      "default": "client",
+      "enum": [
+        "client",
+        "staff",
+        "admin"
+      ]
+    },
+    "avatar": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images",
+        "files"
+      ]
+    },
+    "activeStatus": {
+      "type": "enumeration",
+      "required": true,
+      "enum": [
+        "active",
+        "suspended"
+      ]
+    },
+    "flags": {
+      "type": "json"
+    },
+    "lastSeenAt": {
+      "type": "datetime"
+    },
+    "organization": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::organization.organization",
+      "inversedBy": "profiles"
+    },
+    "requests": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::request.request",
+      "mappedBy": "requester"
+    }
+  }
+}

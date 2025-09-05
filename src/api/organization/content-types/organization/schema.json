@@ -1,0 +1,46 @@
+{
+  "kind": "collectionType",
+  "collectionName": "organizations",
+  "info": {
+    "singularName": "organization",
+    "pluralName": "organizations",
+    "displayName": "Organization"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "name": {
+      "type": "string",
+      "required": true
+    },
+    "slug": {
+      "type": "string",
+      "required": true,
+      "unique": true
+    },
+    "contactEmail": {
+      "type": "email",
+      "required": true,
+      "unique": true
+    },
+    "contactPhone": {
+      "type": "string"
+    },
+    "address": {
+      "type": "component",
+      "component": "shared.address",
+      "repeatable": false
+    },
+    "notes": {
+      "type": "blocks"
+    },
+    "profiles": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::profile.profile",
+      "mappedBy": "organization"
+    }
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "collectionName": "components_request_deliverable_deliverables",
+  "info": {
+    "displayName": "deliverables"
+  },
+  "options": {},
+  "attributes": {
+    "deliverable": {
+      "type": "string",
+      "required": false
+    },
+    "dueDate": {
+      "type": "date"
+    },
+    "deliverableStatus": {
+      "type": "enumeration",
+      "enum": [
+        "Planned",
+        "In Progress",
+        "Done"
+      ]
+    },
+    "file": {
+      "type": "media",
+      "multiple": true,
+      "allowedTypes": [
+        "files",
+        "audios",
+        "images",
+        "videos"
+      ]
+    }
+  },
+  "config": {}
+}

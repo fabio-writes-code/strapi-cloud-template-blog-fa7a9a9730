@@ -3,6 +3,8 @@ import { sendExpo } from './services/expo-notifications';
 import { Expo } from "expo-server-sdk"
 
 const UIDS = ['api::notification.notification']
+// Guard to prevent re-entrancy when we republish programmatically
+const INTERNAL_PUBLISHING = new Set<string>();
 
 export default {
   /**
@@ -14,11 +16,16 @@ export default {
 
   register({ strapi }: { strapi: Core.Strapi }) {
     strapi.documents.use(async (ctx, next) => {
-
       if (!UIDS.includes(ctx.uid)) return next()
+
       const result = await next()
 
       if (ctx.action == 'publish' && result) {
+        // Skip if this publish was triggered internally to sync changes
+        if (INTERNAL_PUBLISHING.has(String(ctx.params.documentId))) {
+          INTERNAL_PUBLISHING.delete(String(ctx.params.documentId))
+          return result
+        }
         const { title, body, deeplink } = await strapi
           .documents('api::notification.notification')
           .findOne({ documentId: ctx.params.documentId })
@@ -42,15 +49,22 @@ export default {
           data: { deeplink }
         })
 
-        await strapi.documents('api::notification.notification')
-          .update({
-            documentId: ctx.params.documentId,
-            data: {
-              sentAt: new Date().toISOString(),
-              sendCount: tokens.length,
-              errors: tickets.filter(t => t.status != 'ok')
-            }
-          })
+        // Update the draft with send metadata, then republish to keep status clean
+        await strapi.documents('api::notification.notification').update({
+          documentId: ctx.params.documentId,
+          status: 'draft',
+          data: {
+            sentAt: new Date().toISOString(),
+            sendCount: tokens.length,
+            errors: tickets.filter(t => t.status != 'ok'),
+          }
+        })
+
+        // Republish to ensure the entry stays Published (not Modified)
+        INTERNAL_PUBLISHING.add(String(ctx.params.documentId))
+        await strapi.documents('api::notification.notification').publish({
+          documentId: ctx.params.documentId,
+        })
       }
 
       return result

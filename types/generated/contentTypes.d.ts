@@ -475,6 +475,7 @@ export interface ApiAuthorAuthor extends Struct.CollectionTypeSchema {
       Schema.Attribute.Private;
     name: Schema.Attribute.String;
     publishedAt: Schema.Attribute.DateTime;
+    request: Schema.Attribute.Relation<'manyToOne', 'api::request.request'>;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -618,6 +619,95 @@ export interface ApiNotificationNotification
   };
 }
 
+export interface ApiOrganizationOrganization
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'organizations';
+  info: {
+    displayName: 'Organization';
+    pluralName: 'organizations';
+    singularName: 'organization';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    address: Schema.Attribute.Component<'shared.address', false>;
+    contactEmail: Schema.Attribute.Email &
+      Schema.Attribute.Required &
+      Schema.Attribute.Unique;
+    contactPhone: Schema.Attribute.String;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::organization.organization'
+    > &
+      Schema.Attribute.Private;
+    name: Schema.Attribute.String & Schema.Attribute.Required;
+    notes: Schema.Attribute.Blocks;
+    profiles: Schema.Attribute.Relation<'oneToMany', 'api::profile.profile'>;
+    publishedAt: Schema.Attribute.DateTime;
+    slug: Schema.Attribute.String &
+      Schema.Attribute.Required &
+      Schema.Attribute.Unique;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiProfileProfile extends Struct.CollectionTypeSchema {
+  collectionName: 'profiles';
+  info: {
+    displayName: 'Profile';
+    pluralName: 'profiles';
+    singularName: 'profile';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    activeStatus: Schema.Attribute.Enumeration<['active', 'suspended']> &
+      Schema.Attribute.Required;
+    avatar: Schema.Attribute.Media<'images' | 'files'>;
+    clerkUserId: Schema.Attribute.String &
+      Schema.Attribute.Required &
+      Schema.Attribute.Private &
+      Schema.Attribute.Unique;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    email: Schema.Attribute.Email &
+      Schema.Attribute.Required &
+      Schema.Attribute.Unique;
+    firstName: Schema.Attribute.String & Schema.Attribute.Required;
+    flags: Schema.Attribute.JSON;
+    lastName: Schema.Attribute.String & Schema.Attribute.Required;
+    lastSeenAt: Schema.Attribute.DateTime;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::profile.profile'
+    > &
+      Schema.Attribute.Private;
+    organization: Schema.Attribute.Relation<
+      'manyToOne',
+      'api::organization.organization'
+    >;
+    phone: Schema.Attribute.String;
+    publishedAt: Schema.Attribute.DateTime;
+    requests: Schema.Attribute.Relation<'oneToMany', 'api::request.request'>;
+    role: Schema.Attribute.Enumeration<['client', 'staff', 'admin']> &
+      Schema.Attribute.Required &
+      Schema.Attribute.DefaultTo<'client'>;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiRequestRequest extends Struct.CollectionTypeSchema {
   collectionName: 'requests';
   info: {
@@ -629,17 +719,32 @@ export interface ApiRequestRequest extends Struct.CollectionTypeSchema {
     draftAndPublish: true;
   };
   attributes: {
-    author: Schema.Attribute.Relation<'oneToOne', 'api::author.author'>;
-    category: Schema.Attribute.String;
-    clientName: Schema.Attribute.String;
+    analysts: Schema.Attribute.Relation<'oneToMany', 'api::author.author'>;
+    attachment: Schema.Attribute.Media<
+      'images' | 'files' | 'videos' | 'audios',
+      true
+    >;
+    category: Schema.Attribute.Enumeration<
+      [
+        'Legislative Analysis',
+        'Policy Research',
+        'Economic Analysis',
+        'Legal Research',
+        'Political Intelligence',
+        'Regulatory Review',
+      ]
+    > &
+      Schema.Attribute.Required;
+    completedAt: Schema.Attribute.Date;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
-    dateRequested: Schema.Attribute.String;
-    dateStarted: Schema.Attribute.String;
-    deliverable: Schema.Attribute.String;
-    description: Schema.Attribute.Text & Schema.Attribute.Required;
-    estimatedCompletion: Schema.Attribute.String;
+    dateStarted: Schema.Attribute.Date;
+    deliverable: Schema.Attribute.Component<
+      'request-deliverable.deliverables',
+      true
+    >;
+    description: Schema.Attribute.Blocks;
     estimatedCost: Schema.Attribute.Decimal;
     estimatedTimeframe: Schema.Attribute.String;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
@@ -651,9 +756,12 @@ export interface ApiRequestRequest extends Struct.CollectionTypeSchema {
     priority: Schema.Attribute.Enumeration<['high', 'medium', 'low']>;
     progress: Schema.Attribute.Integer;
     publishedAt: Schema.Attribute.DateTime;
+    requestedDate: Schema.Attribute.Date & Schema.Attribute.Required;
+    requester: Schema.Attribute.Relation<'manyToOne', 'api::profile.profile'>;
     requestStatus: Schema.Attribute.Enumeration<
       ['Pending', 'In Progress', 'Completed']
-    >;
+    > &
+      Schema.Attribute.DefaultTo<'Pending'>;
     title: Schema.Attribute.String & Schema.Attribute.Required;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
@@ -1177,6 +1285,8 @@ declare module '@strapi/strapi' {
       'api::device.device': ApiDeviceDevice;
       'api::global.global': ApiGlobalGlobal;
       'api::notification.notification': ApiNotificationNotification;
+      'api::organization.organization': ApiOrganizationOrganization;
+      'api::profile.profile': ApiProfileProfile;
       'api::request.request': ApiRequestRequest;
       'plugin::content-releases.release': PluginContentReleasesRelease;
       'plugin::content-releases.release-action': PluginContentReleasesReleaseAction;
